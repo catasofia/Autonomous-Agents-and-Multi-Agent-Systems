@@ -44,6 +44,7 @@ class Environment:
         self.grid_node_width = 25
         self.grid_node_height = 25
 
+
     def scatter_pellets(self):
         free_cells = self.get_free_cells()
         num_pellets = round(len(free_cells) / 10)
@@ -137,6 +138,7 @@ class Environment:
         pygame.draw.rect(self.grid_display, color, [x, y, self.grid_node_width, self.grid_node_height])
 
     def update_map_gui(self):
+
         y = 0  # we start at the top of the screen
         for row in self.map:
             x = 0 # for every row we start at the left of the screen again
@@ -156,6 +158,11 @@ class Environment:
                     self.createSquare(x, y, (0, 0, 0))
                 x += self.grid_node_width # for ever item/number in that row we move one "step" to the right
             y += self.grid_node_height   # for every new row we move one "step" downwards
+
+        #for event in pygame.event.get():
+        #    if event.type == pygame.QUIT:
+        #        run = False
+
         pygame.display.update()
 
     def step(self, agent, action):
@@ -167,6 +174,7 @@ class Environment:
             return self.map, False
         elif (self.has_pellet(desired_pos_x, desired_pos_y)):
             self.map[prev_pos_x][prev_pos_y] = 0
+            agent.set_position((desired_pos_x, desired_pos_y))
             agent.increase_power()
             self.map[desired_pos_x][desired_pos_y] = agent.get_id()
             
@@ -183,6 +191,7 @@ class Environment:
                 elif enemy.get_power() <= agent.get_power():    
                     self.map[prev_pos_x][prev_pos_y] = 0
                     self.map[desired_pos_x][desired_pos_y] = agent.get_id()
+                    agent.set_position((desired_pos_x, desired_pos_y))
                     agent.increase_power() # check this out in the future
                     self.delete_agent_from_env(enemy.get_id())
                 else:
@@ -190,6 +199,7 @@ class Environment:
         else:
             self.map[prev_pos_x][prev_pos_y] = 0
             self.map[desired_pos_x][desired_pos_y] = agent.get_id()
+            agent.set_position((desired_pos_x, desired_pos_y))
 
 map = Environment(4, 1)
 map.draw_map()
