@@ -11,6 +11,11 @@ class Environment:
     PELLET = 2
     FIRST_AGENT_ID = 3
 
+    BLOCK_IMG = "../imgs/block.jpg"
+    PELLET_IMG = "../imgs/pellet.jpg"
+    RED_FISH_IMG = "../imgs/red_fish.png"
+    BLUE_FISH_IMG = "../imgs/blue_fish.png"
+
     RED = "RED"
     BLUE = "BLUE"
 
@@ -22,6 +27,22 @@ class Environment:
         self.agent_counter = 0
         self.agents = {}
         self.team_red, self.team_blue = self.initialize_teams(num_agents)
+        self.grid_display = pygame.display.set_mode((400, 400))
+        pygame.display.set_caption("AASMA FISH AND CHIPS")
+        pygame.display.get_surface().fill((200, 200, 200))  # background
+        self.block = pygame.image.load(self.BLOCK_IMG)
+        self.pellet = pygame.image.load(self.PELLET_IMG)
+        self.red_fish = pygame.image.load(self.RED_FISH_IMG)
+        self.blue_fish = pygame.image.load(self.BLUE_FISH_IMG)
+
+        self.block = pygame.transform.scale(self.block, (25,25))
+        self.pellet = pygame.transform.scale(self.pellet, (25,25))
+        self.red_fish = pygame.transform.scale(self.red_fish, (25,25))
+        self.blue_fish = pygame.transform.scale(self.blue_fish, (25,25))
+        # red_fish = pygame.transform.rotate(red_fish, 90) - rotate
+
+        self.grid_node_width = 25
+        self.grid_node_height = 25
 
     def scatter_pellets(self):
         free_cells = self.get_free_cells()
@@ -48,13 +69,6 @@ class Environment:
             free_cells = list(filter(lambda x: (x[1] <= (round(self.WIDTH / 2) - 1)), free_cells))
         elif(team == self.BLUE):
             free_cells = list(filter(lambda x: (x[1] >= round(self.WIDTH / 2)), free_cells))
-        """ match team:
-            case self.RED:
-                free_cells = list(filter(lambda x: (x[1] <= (round(self.WIDTH / 2) - 1)), free_cells))
-            case self.BLUE:
-                free_cells = list(filter(lambda x: (x[1] >= round(self.WIDTH / 2)), free_cells))
-            case _:
-                raise Exception("Error initializing agent!") """
         
         x, y = free_cells[np.random.choice(len(free_cells))]
         agent = ag.Agent(team, (x,y), self.agent_counter + self.FIRST_AGENT_ID)
@@ -70,78 +84,32 @@ class Environment:
         return self.map[x][y] == 2
     
     def has_agent_diff_team(self, x, y, team):
-        agent_id = self.map[x][y]
+        agent = self.agents.get(self.map[x][y])
         if (team == self.RED):
-            return agent_id in self.team_blue
+            return agent in self.team_blue
         elif (team == self.BLUE):
-            return agent_id in self.team_red
+            return agent in self.team_red
         else:
             raise Exception("Team not valid")
 
     def draw_map(self):
+        self.update_map_gui()
 
-        gridDisplay = pygame.display.set_mode((400, 400))
-        pygame.display.set_caption("AASMA FISH AND CHIPS")
-        pygame.display.get_surface().fill((200, 200, 200))  # background
-        block = pygame.image.load("../imgs/block.jpg")
-        pellet = pygame.image.load("../imgs/pellet.jpg")
-        red_fish = pygame.image.load("../imgs/red_fish.png")
-        blue_fish = pygame.image.load("../imgs/blue_fish.png")
-
-        block = pygame.transform.scale(block, (25,25))
-        pellet = pygame.transform.scale(pellet, (25,25))
-        red_fish = pygame.transform.scale(red_fish, (25,25))
-        blue_fish = pygame.transform.scale(blue_fish, (25,25))
-        # red_fish = pygame.transform.rotate(red_fish, 90) - rotate
-
-        grid_node_width = 25
-        grid_node_height = 25
-
-        def createSquare(x, y, color):
-            pygame.draw.rect(gridDisplay, color, [x, y, grid_node_width, grid_node_height ])
-
-        y = 0  # we start at the top of the screen
-        for row in self.map:
-            x = 0 # for every row we start at the left of the screen again
-            for item in row:
-                if item == 0:
-                    createSquare(x, y, (255, 255, 255))
-                elif item == self.BLOCK:
-                    gridDisplay.blit(block, (x,y))
-                elif item == self.PELLET:
-                    gridDisplay.blit(pellet, (x,y))
-                elif item >= self.FIRST_AGENT_ID and item < self.agent_counter + self.FIRST_AGENT_ID:
-                    if self.agents.get(item).get_team() == self.RED:
-                        gridDisplay.blit(red_fish, (x,y))
-                    else:
-                        gridDisplay.blit(blue_fish, (x,y))
-                else:
-                    createSquare(x, y, (0, 0, 0))
-                x += grid_node_width # for ever item/number in that row we move one "step" to the right
-            y += grid_node_height   # for every new row we move one "step" downwards
-        pygame.display.update()
-
-        while True:
-            pass
-
-        """ for x in range(16):
-            for y in range(16):
-                if self.map[x][y] == 0:
-                    print(" ", end=" ")
-                elif self.map[x][y] == self.BLOCK:
-                    print('H', end=" ")
-                    screen.blit(block, x, y)
-                elif self.map[x][y] == self.PELLET:
-                    print('P', end=" ")
-                elif self.map[x][y] >= self.FIRST_AGENT_ID and self.map[x][y] < self.agent_counter + self.FIRST_AGENT_ID:
-                    if self.agents.get(self.map[x][y]).get_team() == self.RED:
-                        print('R', end=" ")
-                    else:
-                        print('B', end=" ")
-                else:
-                    pygame.draw.rect(screen, (255, 0, 0), x, y, self.WIDTH)
-                    raise Exception("Deu merda!")
-            print("") """
+        while self.team_blue and self.team_red:
+            action = input("Enter an action:")
+            if int(action) == 0:
+                self.step(self.agents.get(3), 0)
+            elif int(action) == 1:
+                self.step(self.agents.get(3), 1)
+            elif int(action) == 2:
+                self.step(self.agents.get(3), 2)
+            elif int(action) == 3:
+                self.step(self.agents.get(3), 3)
+            elif int(action) == 4:
+                self.step(self.agents.get(3), 4)
+            else:
+                raise Exception("Trolaro abafa a palhinha")
+            self.update_map_gui()
 
     def get_free_cells(self):
         unoccupied_cells = []
@@ -150,42 +118,78 @@ class Environment:
                 if self.map[x][y] == 0: unoccupied_cells.append((x,y))
         return unoccupied_cells
 
-    def step(self, agent, action):
-        # ver posicao atual do agente
-        # ver se futura posicao está livre
-            #se pellet, move e mais forte
-            #se agente mais fraco, move e come o outro
-            #se agente mais forte, morre
-            #se free, move
-            #else, não move
-        (x,y) = agent.get_position()
-        if action ==  0:
-            (nx,ny) = (x, y+1)
-        elif action ==  1:
-            (nx,ny) = (x, y-1)
-        elif action ==  2:
-            (nx,ny) = (x-1, y)
-        elif action == 3:
-            (nx,ny) = (x+1, y)
-        elif action == 4:
-            (nx,ny) = (x,y)
-        else:
-            raise Exception("Error establishing desired outcome")
-        
-        if (self.has_block(nx, ny)):
-            return self.map, False  
-        
-        elif (self.has_pellet(nx, ny)):
-            agent.increase_power(5)
-            self.map[nx][ny] = agent.get_id()
-            self.map[x][y] = 0
-            return self.map, True
-        
-        elif (self.map[nx][ny] > self.FIRST_AGENT_ID and self.map[x][y] < self.agent_counter + self.FIRST_AGENT_ID):
-            self.has_agent_diff_team(nx, ny, agent.get_team())
-        
-        
+    def get_agent(self, agent_id):
+        return self.agents.get(agent_id)
 
+    def delete_agent_from_env(self, agent_id):
+        agent = self.agents.get(agent_id)
+
+        if (agent in self.team_blue):
+            self.team_blue.remove(agent)
+        elif (agent in self.team_red):
+            self.team_red.remove(agent)
+        else:
+            raise Exception("Error removing agent from team")
+
+        del self.agents[agent_id]
+
+    def createSquare(self, x, y, color):
+        pygame.draw.rect(self.grid_display, color, [x, y, self.grid_node_width, self.grid_node_height])
+
+    def update_map_gui(self):
+        y = 0  # we start at the top of the screen
+        for row in self.map:
+            x = 0 # for every row we start at the left of the screen again
+            for item in row:
+                if item == 0:
+                    self.createSquare(x, y, (255, 255, 255))
+                elif item == self.BLOCK:
+                    self.grid_display.blit(self.block, (x,y))
+                elif item == self.PELLET:
+                    self.grid_display.blit(self.pellet, (x,y))
+                elif item >= self.FIRST_AGENT_ID and item < self.agent_counter + self.FIRST_AGENT_ID:
+                    if self.agents.get(item).get_team() == self.RED:
+                        self.grid_display.blit(self.red_fish, (x,y))
+                    else:
+                        self.grid_display.blit(self.blue_fish, (x,y))
+                else:
+                    self.createSquare(x, y, (0, 0, 0))
+                x += self.grid_node_width # for ever item/number in that row we move one "step" to the right
+            y += self.grid_node_height   # for every new row we move one "step" downwards
+        pygame.display.update()
+
+    def step(self, agent, action):
+        prev_pos_x, prev_pos_y = agent.get_position()
+        desired_pos_x, desired_pos_y = agent.get_desired_outcome(action)
+        print("Prev: (", prev_pos_x, ",", prev_pos_y, ")")
+        print("Desired: (", desired_pos_x, ",", desired_pos_y, ")")
+        if (self.has_block(desired_pos_x, desired_pos_y)):
+            return self.map, False
+        elif (self.has_pellet(desired_pos_x, desired_pos_y)):
+            self.map[prev_pos_x][prev_pos_y] = 0
+            agent.increase_power()
+            self.map[desired_pos_x][desired_pos_y] = agent.get_id()
+            
+            return self.map, True
+        elif (self.map[desired_pos_x][desired_pos_y] >= self.FIRST_AGENT_ID and self.map[desired_pos_x][desired_pos_y] < self.agent_counter + self.FIRST_AGENT_ID):
+            is_enemy = self.has_agent_diff_team(desired_pos_x, desired_pos_y, agent.get_team())
+            
+            if (is_enemy):
+                enemy = self.get_agent(self.map[desired_pos_x][desired_pos_y])
+                if enemy.get_power() > agent.get_power():
+                    self.map[prev_pos_x][prev_pos_y] = 0
+                    self.delete_agent_from_env(agent.get_id())
+                    enemy.increase_power() # check this out in the future
+                elif enemy.get_power() <= agent.get_power():    
+                    self.map[prev_pos_x][prev_pos_y] = 0
+                    self.map[desired_pos_x][desired_pos_y] = agent.get_id()
+                    agent.increase_power() # check this out in the future
+                    self.delete_agent_from_env(enemy.get_id())
+                else:
+                    raise Exception("Error updating map")
+        else:
+            self.map[prev_pos_x][prev_pos_y] = 0
+            self.map[desired_pos_x][desired_pos_y] = agent.get_id()
 
 map = Environment(4, 1)
 map.draw_map()

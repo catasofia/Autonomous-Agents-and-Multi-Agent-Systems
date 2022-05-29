@@ -5,13 +5,11 @@ from numpy import power
 
 class Agent:
 
-    ACTIONS = {
-        "UP":0,
-        "DOWN":1,
-        "LEFT":2,
-        "RIGHT":3,
-        "NOOP":4,
-    }
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
+    NOOP = 4
 
     def __init__(self, team, position, id):
         self.team = team
@@ -41,22 +39,21 @@ class Agent:
     def get_position(self):
         return self.position
     
-    def increase_power(self, value):
-        power += value
+    def increase_power(self):
+        self.power+=1
 
     def get_desired_outcome(self, action):
-        x, y = self.position
+        x, y = self.get_position()
 
-        """ match self.ACTIONS.get(action):
-            case 0:
-                return (x, y+1)
-            case 1:
-                return (x, y-1)
-            case 2:
-                return (x-1, y)
-            case 3:
-                return (x+1, y)
-            case 4:
-                return self.position
-            case _:
-                raise Exception("Error establishing desired outcome") """
+        if action ==  self.UP:
+            return (x-1, y)
+        elif action ==  self.DOWN:
+            return (x+1, y)
+        elif action ==  self.LEFT:
+            return (x, y-1)
+        elif action ==  self.RIGHT:
+            return (x, y+1)
+        elif action ==  self.NOOP:
+            return (x,y)
+        else:
+            raise Exception("Error establishing desired outcome")
