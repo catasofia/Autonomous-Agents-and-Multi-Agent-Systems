@@ -1,6 +1,8 @@
 from argparse import Action
 from abc import ABC, abstractmethod
 
+from numpy import power
+
 class Agent:
 
     ACTIONS = {
@@ -32,6 +34,15 @@ class Agent:
 
     def get_id(self):
         return self.id
+    
+    def get_power(self):
+        return self.power
+    
+    def get_position(self):
+        return self.position
+    
+    def increase_power(self, value):
+        power += value
 
     def get_desired_outcome(self, action):
         x, y = self.position
