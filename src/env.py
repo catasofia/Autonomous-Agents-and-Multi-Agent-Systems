@@ -2,8 +2,12 @@ import agent as ag
 import numpy as np
 import pygame
 
+# TODO:
+# Decide what to do when agents from the same team cross paths with one another
+# Think about alternate ways for represeneting incremental value of agent's power (how to represent it visually?)
+
 class Environment:
-    # Map square grid size
+    # Map square grid size (in cells)
     WIDTH = 16
     HEIGHT = 16
 
@@ -87,7 +91,7 @@ class Environment:
         if num_agents % 2 == 0:
             self.num_agents = num_agents
         else:
-            raise Exception("Total number of agents must be an even number. Try again.")
+            raise Exception("Total number of agents must be an even number!")
 
         self.scatter_pellets()
         self.agent_id_counter = self.FIRST_AGENT_ID
@@ -174,23 +178,11 @@ class Environment:
             elif int(action) == 4:
                 self.step(self.agents.get(3), 4)
             else:
-                raise Exception("Trolaro abafa a palhinha")
+                raise Exception("Impossible action!")
             self.update_map_gui()
 
     def get_agent(self, agent_id):
         return self.agents.get(agent_id)
-
-    def delete_agent_from_env(self, agent_id):
-        agent = self.agents.get(agent_id)
-
-        if (agent in self.team_blue):
-            self.team_blue.remove(agent)
-        elif (agent in self.team_red):
-            self.team_red.remove(agent)
-        else:
-            raise Exception("Error removing agent from team")
-
-        del self.agents[agent_id]
 
     def createSquare(self, x, y, color):
         pygame.draw.rect(self.grid_display, color, [x, y, self.grid_node_width, self.grid_node_height])
@@ -227,31 +219,38 @@ class Environment:
         prev_pos_x, prev_pos_y = agent.get_position()
         desired_pos_x, desired_pos_y = agent.get_desired_outcome(action)
 
-        if (self.has_block(desired_pos_x, desired_pos_y)):
+        if self.cell_is_out_of_map_bounds(desired_pos_x, desired_pos_y) or self.has_block(desired_pos_x, desired_pos_y):
             return self.map, False
-        elif (self.has_pellet(desired_pos_x, desired_pos_y)):
+        elif self.has_pellet(desired_pos_x, desired_pos_y):
             self.update_map_eaten_pellet(prev_pos_x, prev_pos_y, desired_pos_x, desired_pos_y, agent)
             return self.map, True
         elif self.cell_has_agent(desired_pos_x, desired_pos_y):
             if self.is_enemy(desired_pos_x, desired_pos_y, agent.get_team()):
                 enemy = self.get_agent(self.map[desired_pos_x][desired_pos_y])
                 if enemy.get_power() > agent.get_power():
-                    self.map[prev_pos_x][prev_pos_y] = 0
+                    self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
                     self.delete_agent_from_env(agent.get_id())
                     enemy.increase_power() # check this out in the future
                 elif enemy.get_power() <= agent.get_power():    
-                    self.map[prev_pos_x][prev_pos_y] = 0
-                    self.map[desired_pos_x][desired_pos_y] = agent.get_id()
+                    self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
+                    self.set_cell_as_agent(desired_pos_x, desired_pos_y, agent.get_id())
                     agent.set_new_position(desired_pos_x, desired_pos_y)
                     agent.increase_power() # check this out in the future
                     self.delete_agent_from_env(enemy.get_id())
                 else:
-                    raise Exception("Error updating map")
-        else:
-            self.map[prev_pos_x][prev_pos_y] = 0
-            self.map[desired_pos_x][desired_pos_y] = agent.get_id()
+                    raise Exception("Error updating map!")
+        elif self.cell_is_free(desired_pos_x, desired_pos_y):
+            self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
+            self.set_cell_as_agent(desired_pos_x, desired_pos_y, agent.get_id())
             agent.set_new_position(desired_pos_x, desired_pos_y)
+        else:
+            raise Exception("Error updating map!")
     
+    def cell_is_out_of_map_bounds(self, x, y):
+        is_x_out_of_map_bound = x > self.HEIGHT - 1 or x < 0 
+        is_y_out_of_map_bound = y > self.WIDTH - 1 or y < 0
+        return is_x_out_of_map_bound or is_y_out_of_map_bound
+
     def has_block(self, x, y):
         return self.map[x][y] == self.BLOCK
 
@@ -282,6 +281,21 @@ class Environment:
             return agent in self.team_red
         else:
             raise Exception("Error checking if agent is an enemy!")
+
+    def delete_agent_from_env(self, agent_id):
+        agent = self.agents.get(agent_id)
+
+        if (agent in self.team_blue):
+            self.team_blue.remove(agent)
+        elif (agent in self.team_red):
+            self.team_red.remove(agent)
+        else:
+            raise Exception("Error removing agent from team")
+
+        del self.agents[agent_id]
+
+    def cell_is_free(self, x, y):
+        return self.map[x][y] == self.FREE_SPACE
 
 map = Environment(4, 1)
 map.draw_map()
