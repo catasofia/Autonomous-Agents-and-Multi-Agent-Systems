@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import copy
 
 # TODO:
 # Decide what to do when agents from the same team cross paths with one another
@@ -26,6 +27,9 @@ class Environment:
     # Agent teams
     RED = 'R'
     BLUE = 'B'
+
+    team_red = {}
+    team_blue = {}
 
     # Map settings
     MAP1 = "M1"
@@ -88,8 +92,6 @@ class Environment:
         # Initialize map internal representation
         self.map = self.MAP_SETTING.get(self.MAP2).copy()
         self.num_agents = num_agents
-        self.team_red = {}
-        self.team_blue = {}
         self.scatter_pellets()
 
         # Initialize map GUI
@@ -186,37 +188,41 @@ class Environment:
         desired_pos_x, desired_pos_y = agent.get_desired_outcome(action)
         
         if self.cell_is_out_of_map_bounds(desired_pos_x, desired_pos_y) or self.has_block(desired_pos_x, desired_pos_y):
-            print("1")
             return self.get_map(), self.is_game_over(), False
+        
         elif self.has_pellet(desired_pos_x, desired_pos_y):
-            print("2")
             self.update_map_eaten_pellet(prev_pos_x, prev_pos_y, desired_pos_x, desired_pos_y, agent)
             return self.get_map(), self.is_game_over(), False
+        
         elif self.cell_has_agent(desired_pos_x, desired_pos_y):
+            
             if self.is_enemy(desired_pos_x, desired_pos_y, agent.get_team()):
                 enemy = self.get_agent(self.map[desired_pos_x][desired_pos_y], agent.get_team())
                 if enemy.get_power() > agent.get_power():
-                    print("3")
                     self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
-                    self.delete_agent_from_env(agent.get_id())
+                    self.delete_agent_from_env(agent.get_id(), agent.get_team())
                     enemy.increase_power()
                     return self.get_map(), self.is_game_over(), agent
+                
                 elif enemy.get_power() <= agent.get_power():
-                    print("4")
                     self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
                     self.set_cell_as_agent(desired_pos_x, desired_pos_y, agent.get_id())
                     agent.set_new_position(desired_pos_x, desired_pos_y)
-                    self.delete_agent_from_env(enemy.get_id())
+                    self.delete_agent_from_env(enemy.get_id(), enemy.get_team())
                     agent.increase_power()
                     return self.get_map(), self.is_game_over(), enemy
+                
                 else:
                     raise Exception("Error updating map!")
+            else:
+                return self.get_map(), self.is_game_over(), False
+        
         elif self.cell_is_free(desired_pos_x, desired_pos_y):
-            print("5")
             self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
             self.set_cell_as_agent(desired_pos_x, desired_pos_y, agent.get_id())
             agent.set_new_position(desired_pos_x, desired_pos_y)
             return self.get_map(), self.is_game_over(), False
+        
         else:
             raise Exception("Error updating map!")
     
@@ -275,8 +281,8 @@ class Environment:
         return self.map[x][y] == self.FREE_SPACE
 
     def set_teams(self, team_red, team_blue):
-        self.team_red = team_red
-        self.team_blue = team_blue
+        self.team_red.update(team_red)
+        self.team_blue.update(team_blue)
 
     def get_map(self):
         return self.map
