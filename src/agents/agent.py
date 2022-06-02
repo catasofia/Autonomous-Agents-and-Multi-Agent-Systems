@@ -1,4 +1,6 @@
+from env import Environment
 from abc import abstractmethod
+import numpy as np
 
 class Agent:
     # Agent actions
@@ -7,13 +9,31 @@ class Agent:
     LEFT = 2
     RIGHT = 3
     NOOP = 4
+    ACTIONS = [UP, DOWN, LEFT, RIGHT, NOOP]
 
-    def __init__(self, team, position, id):
-        self.team = team
-        self.position = position
+    # Teams
+    RED = 'R'
+    BLUE = 'B'
+
+    def __init__(self, id, team, env):
         self.id = id
+        self.team = team
+        self.position = self.deploy_agent_on_env(env)
         self.power = 0
+        self.observations = None
     
+    def deploy_agent_on_env(self, env):
+        free_cells = env.get_free_cells()
+
+        if(self.team == self.RED):
+            free_cells = list(filter(lambda x: (x[1] <= Environment.WIDTH // 2 - 1), free_cells))
+        elif(self.team == self.BLUE):
+            free_cells = list(filter(lambda x: (x[1] >= Environment.WIDTH // 2), free_cells))
+        
+        x, y = free_cells[np.random.choice(len(free_cells))]
+        env.set_cell_as_agent(x, y, self.get_id())
+        return (x,y)
+
     def get_team(self):
         return self.team
 
@@ -33,8 +53,11 @@ class Agent:
         self.power+=1
 
     @abstractmethod
-    def action(self) -> int:
+    def action(self):
         raise NotImplementedError()
+
+    def see(self, observations):
+        self.observations = observations
 
     def move(self, action):
         self.position = self.get_desired_outcome(action)
@@ -52,5 +75,5 @@ class Agent:
             return (x, y+1)
         elif action == self.NOOP:
             return (x,y)
-        else:
-            raise Exception("Error establishing desired outcome!")
+        
+        raise Exception("Error establishing desired outcome!")
