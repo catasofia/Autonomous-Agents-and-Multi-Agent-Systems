@@ -23,6 +23,7 @@ class Environment:
     PELLET_IMG = "../../imgs/pellet.jpg"
     RED_FISH_IMG = "../../imgs/red_fish.png"
     BLUE_FISH_IMG = "../../imgs/blue_fish.png"
+    CHIPS_IMG = "../../imgs/chips.jpg"
     
     # Agent teams
     RED = 'R'
@@ -36,7 +37,9 @@ class Environment:
     MAP2 = "M2"
     MAP3 = "M3"
     MAP_SETTING = {
-        MAP1:np.array([[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        MAP1:np.array([[1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -47,11 +50,9 @@ class Environment:
                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]),
+                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1]]),
 
         MAP2:np.array([[1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
                        [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
@@ -90,7 +91,7 @@ class Environment:
 
     def __init__(self, num_agents, map=1):
         # Initialize map internal representation
-        self.map = self.MAP_SETTING.get(self.MAP2).copy()
+        self.map = self.MAP_SETTING.get(self.MAP1).copy()
         self.num_agents = num_agents
         self.scatter_pellets()
 
@@ -99,7 +100,7 @@ class Environment:
         pygame.display.set_caption("AASMA FISH AND CHIPS")
         pygame.display.get_surface().fill((200, 200, 200))  # background
         self.block = pygame.image.load(self.BLOCK_IMG)
-        self.pellet = pygame.image.load(self.PELLET_IMG)
+        self.pellet = pygame.image.load(self.CHIPS_IMG)
         self.red_fish = pygame.image.load(self.RED_FISH_IMG)
         self.blue_fish = pygame.image.load(self.BLUE_FISH_IMG)
 
@@ -289,11 +290,7 @@ class Environment:
     
     def close(self):
         pygame.quit()
-        exit()
-
-    def print_merda(self):
-        print(self.team_red.keys(), self.team_red.values())
-        print(self.team_blue.keys(), self.team_blue.values())
+        #exit()
 
 map = Environment(4, 1)
 map.draw_map()

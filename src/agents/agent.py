@@ -64,7 +64,6 @@ class Agent:
     
     def get_desired_outcome(self, action):
         x, y = self.get_position()
-
         if action == self.UP:
             return (x-1, y)
         elif action == self.DOWN:
