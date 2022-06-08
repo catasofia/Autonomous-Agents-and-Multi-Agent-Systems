@@ -19,11 +19,11 @@ class Environment:
     FIRST_AGENT_ID = 3
 
     # Map items image paths
-    BLOCK_IMG = "../../imgs/block.jpg"
     PELLET_IMG = "../../imgs/pellet.jpg"
     RED_FISH_IMG = "../../imgs/red_fish.png"
     BLUE_FISH_IMG = "../../imgs/blue_fish.png"
     CHIPS_IMG = "../../imgs/chips.jpg"
+    BLOCK_IMG = "../../imgs/block.jpg"
     
     # Agent teams
     RED = 'R'
@@ -91,7 +91,7 @@ class Environment:
 
     def __init__(self, num_agents, map=1):
         # Initialize map internal representation
-        self.map = self.MAP_SETTING.get(self.MAP1).copy()
+        self.map = self.MAP_SETTING.get(self.MAP2).copy()
         self.num_agents = num_agents
         self.scatter_pellets()
 
@@ -108,7 +108,7 @@ class Environment:
         self.pellet = pygame.transform.scale(self.pellet, (25,25))
         self.red_fish = pygame.transform.scale(self.red_fish, (25,25))
         self.blue_fish = pygame.transform.scale(self.blue_fish, (25,25))
-        # red_fish = pygame.transform.rotate(red_fish, 90) - rotate
+        self.blue_fish = pygame.transform.flip(self.blue_fish, True, False)
 
         self.grid_node_width = 25
         self.grid_node_height = 25

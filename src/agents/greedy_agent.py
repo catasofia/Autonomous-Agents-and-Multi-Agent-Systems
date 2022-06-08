@@ -1,5 +1,7 @@
 import math
+from re import A
 from agent import Agent
+from astar_algorithm import Astar
 import random as rand
 import numpy as np
 from scipy.spatial.distance import cityblock
@@ -21,10 +23,20 @@ class GreedyAgent(Agent):
                     enemys_positions.append((x,y))
         closest_pellet, dist_pellet = self.closest_object(self.position, pellets_positions)
         closest_enemy, dist_enemy = self.closest_object(self.position, enemys_positions)
-        if(closest_pellet is None or dist_enemy < dist_pellet):
-            return self.direction_to_go(self.position, closest_enemy)
+        maze = self.observations.tolist()
+        for x in range(len(maze)):
+            for y in range(len(maze[x])):
+                if maze[x][y] == 1:
+                    maze[x][y] = 1000
+                elif maze[x][y] != 0:
+                    maze[x][y] = 0
+        astar = Astar(maze)
+        if(closest_pellet is None or dist_enemy < dist_pellet and closest_enemy is not None):
+            result = astar.run(self.position, closest_enemy)
+            return self.direction_to_go(result[0], result[1])
         elif(dist_pellet <= dist_enemy):
-            return self.direction_to_go(self.position, closest_pellet)
+            result = astar.run(self.position, closest_pellet)
+            return self.direction_to_go(result[0], result[1])
         else:
             raise Exception("Impossible to move to closest object")
 
@@ -32,6 +44,7 @@ class GreedyAgent(Agent):
 
     def direction_to_go(self, agent_position, object_position):
         distances = np.array(object_position) - np.array(agent_position)
+        #distances = [int(object_position[0]) - int(agent_position[0]), int(object_position[1]) - int(agent_position[1])]
         abs_distances = np.absolute(distances)
         if abs_distances[0] > abs_distances[1]:
             return self._close_horizontally(distances)

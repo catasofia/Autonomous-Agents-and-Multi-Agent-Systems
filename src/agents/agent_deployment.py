@@ -29,8 +29,10 @@ def run_agents(env, agents, num_episodes, agent_type):
                 action = agent.action()
                 observations, game_over, dead_agent = env.step(agent, action)
                 if (dead_agent != False): agents.remove(dead_agent)
+                if game_over:
+                    break
 
-            sleep(0.1)
+            #sleep(0.3)
             env.update_map_gui()
         results[episode] = steps
 
@@ -79,13 +81,13 @@ def greedy_vs_random_scenario(env):
 if __name__ == "__main__":
     
     results = {}
+    num_agents = 4
 
     ## RANDOM VS RANDOM:
     # 1 - Setup Environment
 
     print("Running Random vs Random!")
 
-    num_agents = 4
 
     if num_agents % 2 != 0:
         raise Exception("Total number of agents must be an even number!")
