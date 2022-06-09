@@ -4,6 +4,7 @@ from agent import Agent
 from astar_algorithm import Astar
 import random as rand
 import numpy as np
+import copy
 from scipy.spatial.distance import cityblock
 
 class GreedyAgent(Agent):
@@ -17,18 +18,19 @@ class GreedyAgent(Agent):
         enemys_positions = []
         for x in range(len(self.observations)):
             for y in range(len(self.observations[x])):
-                if self.observations[x][y] == 2: 
+                obs = self.observations[x][y]
+                if not isinstance(obs, tuple) and obs == 2: 
                     pellets_positions.append((x,y))
-                elif self.observations[x][y] >= 3  + (self.num_agents) and self.observations[x][y] <= 3 + self.num_agents * 2 - 1:
+                elif isinstance(obs, tuple) and obs[0] >= 3  + (self.num_agents) and obs[0] <= 3 + self.num_agents * 2 - 1:
                     enemys_positions.append((x,y))
-        closest_pellet, dist_pellet = self.closest_object(self.position, pellets_positions)
-        closest_enemy, dist_enemy = self.closest_object(self.position, enemys_positions)
-        maze = self.observations.tolist()
+        closest_pellet, dist_pellet = self.closest_object(self.position, pellets_positions, False)
+        closest_enemy, dist_enemy = self.closest_object(self.position, enemys_positions, True)
+        maze = copy.deepcopy(self.observations)
         for x in range(len(maze)):
             for y in range(len(maze[x])):
-                if maze[x][y] == 1:
+                if not isinstance(maze[x][y], tuple) and maze[x][y] == 1:
                     maze[x][y] = 1000
-                elif maze[x][y] != 0:
+                elif not isinstance(maze[x][y], tuple) and maze[x][y] != 0:
                     maze[x][y] = 0
         astar = Astar(maze)
         if(closest_pellet is None or dist_enemy < dist_pellet and closest_enemy is not None):
@@ -54,14 +56,19 @@ class GreedyAgent(Agent):
             roll = rand.uniform(0, 1)
             return self._close_horizontally(distances) if roll > 0.5 else self._close_vertically(distances)
 
-    def closest_object(self, agent_position, object_positions):
+    def closest_object(self, agent_position, object_positions, enemys):
         min = math.inf
         closest_object_position = None
         n_object = len(object_positions)
         for p in range(n_object):
             object_position = object_positions[p]
             distance = cityblock(agent_position, object_position)
-            if distance < min:
+            x, y = object_position
+            agent = self.observations[x][y]
+            if enemys and distance < min and agent[1] < self.get_power():
+                min = distance
+                closest_object_position = object_position
+            elif not enemys and distance < min:
                 min = distance
                 closest_object_position = object_position
         return closest_object_position, min

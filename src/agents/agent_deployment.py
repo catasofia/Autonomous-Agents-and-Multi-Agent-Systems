@@ -31,8 +31,7 @@ def run_agents(env, agents, num_episodes, agent_type):
                 if (dead_agent != False): agents.remove(dead_agent)
                 if game_over:
                     break
-
-            #sleep(0.3)
+            sleep(0.3)
             env.update_map_gui()
         results[episode] = steps
 
@@ -82,11 +81,11 @@ if __name__ == "__main__":
     
     results = {}
     num_agents = 4
-
+     
     ## RANDOM VS RANDOM:
     # 1 - Setup Environment
 
-    print("Running Random vs Random!")
+    """ print("Running Random vs Random!")
 
 
     if num_agents % 2 != 0:
@@ -98,12 +97,10 @@ if __name__ == "__main__":
     team_red, team_blue = random_vs_random_scenario(env)
     env.team_blue.update(team_blue.copy())
     env.team_red.update(team_red.copy())
-
-    #env.set_teams(team_red, team_blue)
     
     # 3 - Run
     agents = list(team_red.values()) + list(team_blue.values())
-    results["Random"] = run_agents(env, agents, 20, RANDOM)
+    results["Random"] = run_agents(env, agents, 5, RANDOM) """
     
     ## GREEDY VS RANDOM:
     # 1 - Setup Environment
@@ -120,7 +117,7 @@ if __name__ == "__main__":
     
     # 3 - Run
     agents = list(team_red.values()) + list(team_blue.values())
-    results["Greedy"] = run_agents(env, agents, 20, GREEDY)
+    results["Greedy"] = run_agents(env, agents, 5, GREEDY)
 
     compare_results(
         results,

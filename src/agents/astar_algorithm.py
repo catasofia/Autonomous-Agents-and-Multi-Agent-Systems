@@ -35,13 +35,29 @@ class Astar:
     def neighbours(self, matrix, current):
         neighbours_list = []
         if current.x - 1 >= 0 and matrix[current.x - 1][current.y].weight != 1000:
-            neighbours_list.append(matrix[current.x - 1][current.y])
+            neighbour_aux = matrix[current.x - 1][current.y]
+            if isinstance(neighbour_aux, tuple):
+                neighbours_list.append(neighbour_aux[0])
+            else:
+                neighbours_list.append(neighbour_aux)
         if current.y - 1 >= 0 and matrix[current.x][current.y - 1].weight != 1000:
-            neighbours_list.append(matrix[current.x][current.y - 1])
+            neighbour_aux = matrix[current.x][current.y - 1]
+            if isinstance(neighbour_aux, tuple):
+                neighbours_list.append(neighbour_aux[0])
+            else:
+                neighbours_list.append(neighbour_aux)
         if current.y + 1 < len(matrix[0]) and matrix[current.x][current.y + 1].weight != 1000:
-            neighbours_list.append(matrix[current.x][current.y + 1])
+            neighbour_aux = matrix[current.x][current.y + 1]
+            if isinstance(neighbour_aux, tuple):
+                neighbours_list.append(neighbour_aux[0])
+            else:
+                neighbours_list.append(neighbour_aux)
         if current.x + 1 < len(matrix) and matrix[current.x + 1][current.y].weight != 1000:
-            neighbours_list.append(matrix[current.x + 1][current.y])
+            neighbour_aux = matrix[current.x + 1][current.y]
+            if isinstance(neighbour_aux, tuple):
+                neighbours_list.append(neighbour_aux[0])
+            else:
+                neighbours_list.append(neighbour_aux)
         return neighbours_list
 
     def build(self, end):
@@ -80,7 +96,7 @@ class Astar:
                 if neighbour in closed_list:
                     continue
                 if neighbour.heuristic < current_node.heuristic or neighbour not in open_list:
-                    neighbour.heuristic = neighbour.weight + self.heuristic(neighbour, end)
+                    neighbour.heuristic = self.heuristic(neighbour, end)
                     neighbour.parent = current_node
                 if neighbour not in open_list:
                     open_list.append(neighbour)

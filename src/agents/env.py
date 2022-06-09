@@ -32,66 +32,64 @@ class Environment:
     team_red = {}
     team_blue = {}
 
-    # Map settings
-    MAP1 = "M1"
-    MAP2 = "M2"
-    MAP3 = "M3"
-    MAP_SETTING = {
-        MAP1:np.array([[1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1]]),
-
-        MAP2:np.array([[1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-                       [0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0],
-                       [0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0],
-                       [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                       [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1]]),
-
-        MAP3:np.array([[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
-                       [0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0],
-                       [0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
-                       [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
-                       [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
-                       [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
-                       [0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0],
-                       [0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0],
-                       [0,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0],
-                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
-    }
-
     def __init__(self, num_agents, map=1):
         # Initialize map internal representation
-        self.map = self.MAP_SETTING.get(self.MAP2).copy()
+        MAP1 = "M1"
+        MAP2 = "M2"
+        MAP3 = "M3"
+        MAP_SETTING = {
+            MAP1:[[1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1]],
+
+            MAP2:[[1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+                  [0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0],
+                  [0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0],
+                  [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1]],
+
+            MAP3:[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,1,1,0,0,0,0,0,0,0,0,1,1,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0],
+                  [0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
+                  [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
+                  [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0],
+                  [0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0],
+                  [0,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+        }
+        self.map = MAP_SETTING.get(MAP2)
         self.num_agents = num_agents
         self.scatter_pellets()
 
@@ -157,21 +155,20 @@ class Environment:
         pygame.draw.rect(self.grid_display, color, [x, y, self.grid_node_width, self.grid_node_height])
 
     def update_map_gui(self):
-
         y = 0  # we start at the top of the screen
         for row in self.map:
             x = 0 # for every row we start at the left of the screen again
             for item in row:
                 if item == 0:
                     self.createSquare(x, y, (255, 255, 255))
-                elif item == self.BLOCK:
+                elif not isinstance(item, tuple) and item == self.BLOCK:
                     self.grid_display.blit(self.block, (x,y))
-                elif item == self.PELLET:
+                elif not isinstance(item, tuple) and item == self.PELLET:
                     self.grid_display.blit(self.pellet, (x,y))
-                elif item >= self.FIRST_AGENT_ID and item < self.FIRST_AGENT_ID + self.num_agents:
-                    if item in self.team_red:
+                elif isinstance(item, tuple) and item[0] >= self.FIRST_AGENT_ID and item[0] < self.FIRST_AGENT_ID + self.num_agents:
+                    if item[0] in self.team_red:
                         self.grid_display.blit(self.red_fish, (x,y))
-                    elif item in self.team_blue:
+                    elif item[0] in self.team_blue:
                         self.grid_display.blit(self.blue_fish, (x,y))
                 else:
                     self.createSquare(x, y, (0, 0, 0))
@@ -198,19 +195,21 @@ class Environment:
         elif self.cell_has_agent(desired_pos_x, desired_pos_y):
             
             if self.is_enemy(desired_pos_x, desired_pos_y, agent.get_team()):
-                enemy = self.get_agent(self.map[desired_pos_x][desired_pos_y], agent.get_team())
+                enemy_pos = self.map[desired_pos_x][desired_pos_y]
+                enemy = self.get_agent(enemy_pos[0], agent.get_team())
                 if enemy.get_power() > agent.get_power():
                     self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
                     self.delete_agent_from_env(agent.get_id(), agent.get_team())
                     enemy.increase_power()
+                    self.set_cell_as_agent(desired_pos_x, desired_pos_y, enemy.get_id(), enemy.get_power())
                     return self.get_map(), self.is_game_over(), agent
                 
                 elif enemy.get_power() <= agent.get_power():
                     self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
-                    self.set_cell_as_agent(desired_pos_x, desired_pos_y, agent.get_id())
+                    agent.increase_power()
+                    self.set_cell_as_agent(desired_pos_x, desired_pos_y, agent.get_id(), agent.get_power())
                     agent.set_new_position(desired_pos_x, desired_pos_y)
                     self.delete_agent_from_env(enemy.get_id(), enemy.get_team())
-                    agent.increase_power()
                     return self.get_map(), self.is_game_over(), enemy
                 
                 else:
@@ -220,7 +219,7 @@ class Environment:
         
         elif self.cell_is_free(desired_pos_x, desired_pos_y):
             self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
-            self.set_cell_as_agent(desired_pos_x, desired_pos_y, agent.get_id())
+            self.set_cell_as_agent(desired_pos_x, desired_pos_y, agent.get_id(), agent.get_power())
             agent.set_new_position(desired_pos_x, desired_pos_y)
             return self.get_map(), self.is_game_over(), False
         
@@ -242,22 +241,24 @@ class Environment:
         self.set_cell_as_free_space(prev_x, prev_y)
         agent.set_new_position(next_x, next_y)
         agent.increase_power()
-        self.set_cell_as_agent(next_x, next_y, agent.get_id())
+        self.set_cell_as_agent(next_x, next_y, agent.get_id(), agent.get_power())
 
     def set_cell_as_free_space(self, x, y):
         self.map[x][y] = self.FREE_SPACE
 
-    def set_cell_as_agent(self, x, y, agent_id):
-        self.map[x][y] = agent_id
+    def set_cell_as_agent(self, x, y, agent_id, agent_power):
+        self.map[x][y] = (agent_id, agent_power)
 
     def cell_has_agent(self, x, y):
-        return self.map[x][y] >= self.FIRST_AGENT_ID and self.map[x][y] <= self.FIRST_AGENT_ID + self.num_agents
+        #return self.map[x][y][0] >= self.FIRST_AGENT_ID and self.map[x][y][0] <= self.FIRST_AGENT_ID + self.num_agents
+        return isinstance(self.map[x][y], tuple)
 
     def is_enemy(self, x, y, team):
+        agent = self.map[x][y]
         if (team == self.RED):
-            return self.map[x][y] >= self.FIRST_AGENT_ID  + (self.num_agents // 2) and self.map[x][y] <= self.FIRST_AGENT_ID + self.num_agents - 1
+            return agent[0] >= self.FIRST_AGENT_ID  + (self.num_agents // 2) and agent[0] <= self.FIRST_AGENT_ID + self.num_agents - 1
         elif (team == self.BLUE):
-            return self.map[x][y] >= self.FIRST_AGENT_ID and self.map[x][y] <= self.FIRST_AGENT_ID + (self.num_agents // 2) - 1
+            return agent[0] >= self.FIRST_AGENT_ID and agent[0] <= self.FIRST_AGENT_ID + (self.num_agents // 2) - 1
         raise Exception("Error checking if agent is an enemy!")
 
     def get_agent(self, agent_id, team):
@@ -281,10 +282,6 @@ class Environment:
     def cell_is_free(self, x, y):
         return self.map[x][y] == self.FREE_SPACE
 
-    def set_teams(self, team_red, team_blue):
-        self.team_red.update(team_red)
-        self.team_blue.update(team_blue)
-
     def get_map(self):
         return self.map
     
@@ -292,5 +289,5 @@ class Environment:
         pygame.quit()
         #exit()
 
-map = Environment(4, 1)
-map.draw_map()
+#map = Environment(4, 1)
+#map.draw_map()

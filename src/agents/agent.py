@@ -18,8 +18,8 @@ class Agent:
     def __init__(self, id, team, env):
         self.id = id
         self.team = team
-        self.position = self.deploy_agent_on_env(env)
         self.power = 0
+        self.position = self.deploy_agent_on_env(env)
         self.observations = None
     
     def deploy_agent_on_env(self, env):
@@ -31,7 +31,7 @@ class Agent:
             free_cells = list(filter(lambda x: (x[1] >= Environment.WIDTH // 2), free_cells))
         
         x, y = free_cells[np.random.choice(len(free_cells))]
-        env.set_cell_as_agent(x, y, self.get_id())
+        env.set_cell_as_agent(x, y, self.get_id(), self.get_power())
         return (x,y)
 
     def get_team(self):
