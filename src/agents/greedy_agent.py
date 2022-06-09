@@ -1,6 +1,6 @@
 import math
 from agent import Agent
-from astar_algorithm import Astar
+from a_star import Astar
 import random as rand
 import numpy as np
 import copy
@@ -13,19 +13,19 @@ class GreedyAgent(Agent):
     
     def action(self):
         pellets_positions = []
-        enemys_positions = []
+        enemies_positions = []
         for x in range(len(self.observations)):
             for y in range(len(self.observations[x])):
                 if self.observations[x][y] == 2: 
                     pellets_positions.append((x,y))
                 elif isinstance(self.observations[x][y], Agent):
                     if self.get_team() != self.observations[x][y].get_team():
-                        enemys_positions.append((x,y))
+                        enemies_positions.append((x,y))
         
         closest_pellet, dist_pellet = self.closest_object(self.position, pellets_positions)
-        closest_enemy, dist_enemy = self.closest_object(self.position, enemys_positions)
+        closest_enemy, dist_enemy = self.closest_object(self.position, enemies_positions)
         
-        maze = copy.deepcopy(self.observations)
+        maze = copy.deepcopy(self.observations) 
         for x in range(len(maze)):
             for y in range(len(maze[x])):
                 if maze[x][y] == 1:
@@ -33,11 +33,13 @@ class GreedyAgent(Agent):
                 elif maze[x][y] != 0:
                     maze[x][y] = 0
         astar = Astar(maze)
-        if dist_enemy <= dist_pellet:
-            result = astar.run(self.position, closest_enemy)
+        if closest_enemy == None and closest_pellet == None:
+            return rand.randint(0, len(Agent.ACTIONS) - 1)
+        elif dist_enemy <= dist_pellet:
+            result = astar.a_star_search(self.position, closest_enemy)
             return self.direction_to_go(result[0], result[1])
         elif dist_enemy > dist_pellet:
-            result = astar.run(self.position, closest_pellet)
+            result = astar.a_star_search(self.position, closest_pellet)
             return self.direction_to_go(result[0], result[1])
         raise Exception("Error when finding action!")
 
