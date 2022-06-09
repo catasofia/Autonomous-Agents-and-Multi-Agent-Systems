@@ -9,38 +9,39 @@ from scipy.spatial.distance import cityblock
 
 class GreedyAgent(Agent):
 
-    def __init__(self, id, team, env, num_agents):
-        super(GreedyAgent, self).__init__(id, team, env)
-        self.num_agents = num_agents
+    def __init__(self,team):
+        super(GreedyAgent, self).__init__(team)
     
     def action(self):
         pellets_positions = []
         enemys_positions = []
         for x in range(len(self.observations)):
             for y in range(len(self.observations[x])):
-                obs = self.observations[x][y]
-                if not isinstance(obs, tuple) and obs == 2: 
+                if self.observations[x][y] == 2: 
                     pellets_positions.append((x,y))
-                elif isinstance(obs, tuple) and obs[0] >= 3  + (self.num_agents) and obs[0] <= 3 + self.num_agents * 2 - 1:
-                    enemys_positions.append((x,y))
-        closest_pellet, dist_pellet = self.closest_object(self.position, pellets_positions, False)
-        closest_enemy, dist_enemy = self.closest_object(self.position, enemys_positions, True)
+                elif isinstance(self.observations[x][y], Agent):
+                    if self.get_team() != self.observations[x][y].get_team():
+                        enemys_positions.append((x,y))
+        
+        closest_pellet, dist_pellet = self.closest_object(self.position, pellets_positions)
+        closest_enemy, dist_enemy = self.closest_object(self.position, enemys_positions)
+        
         maze = copy.deepcopy(self.observations)
         for x in range(len(maze)):
             for y in range(len(maze[x])):
-                if not isinstance(maze[x][y], tuple) and maze[x][y] == 1:
+                if maze[x][y] == 1:
                     maze[x][y] = 1000
-                elif not isinstance(maze[x][y], tuple) and maze[x][y] != 0:
+                elif maze[x][y] != 0:
                     maze[x][y] = 0
         astar = Astar(maze)
-        if(closest_pellet is None or dist_enemy < dist_pellet and closest_enemy is not None):
+        if(closest_pellet is None and closest_enemy is not None or dist_enemy <= dist_pellet):
             result = astar.run(self.position, closest_enemy)
             return self.direction_to_go(result[0], result[1])
-        elif(dist_pellet <= dist_enemy):
+        elif(dist_pellet < dist_enemy and closest_pellet is not None):
             result = astar.run(self.position, closest_pellet)
             return self.direction_to_go(result[0], result[1])
         else:
-            raise Exception("Impossible to move to closest object")
+            return rand.randint(0, len(Agent.ACTIONS) - 1)
 
     ### Auxiliary Methods
 
@@ -56,7 +57,7 @@ class GreedyAgent(Agent):
             roll = rand.uniform(0, 1)
             return self._close_horizontally(distances) if roll > 0.5 else self._close_vertically(distances)
 
-    def closest_object(self, agent_position, object_positions, enemys):
+    def closest_object(self, agent_position, object_positions):
         min = math.inf
         closest_object_position = None
         n_object = len(object_positions)
@@ -64,11 +65,10 @@ class GreedyAgent(Agent):
             object_position = object_positions[p]
             distance = cityblock(agent_position, object_position)
             x, y = object_position
-            agent = self.observations[x][y]
-            if enemys and distance < min and agent[1] < self.get_power():
+            if distance < min and isinstance(self.observations[x][y], Agent) and self.get_power() > self.observations[x][y].get_power():
                 min = distance
                 closest_object_position = object_position
-            elif not enemys and distance < min:
+            elif distance < min and not isinstance(self.observations[x][y], Agent):
                 min = distance
                 closest_object_position = object_position
         return closest_object_position, min

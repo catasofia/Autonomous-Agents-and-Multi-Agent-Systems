@@ -1,19 +1,17 @@
 from random import random
 from time import sleep
 from agent import Agent
-from random_agent import RandomAgent 
 from greedy_agent import GreedyAgent
+from random_agent import RandomAgent
 from env import Environment
-import numpy as np
 from utils import compare_results
+import numpy as np
 
 RANDOM = RandomAgent
 GREEDY = GreedyAgent
 
 def run_agents(env, agents, num_episodes, agent_type):
-
     results = np.zeros(num_episodes)
-
     num_agents = len(agents)
     game_over = False
     observations = env.get_map()
@@ -24,14 +22,18 @@ def run_agents(env, agents, num_episodes, agent_type):
 
         while (not game_over):
             steps += 1
+
             for agent in agents:
                 agent.see(observations)
                 action = agent.action()
                 observations, game_over, dead_agent = env.step(agent, action)
-                if (dead_agent != False): agents.remove(dead_agent)
+
+                if (dead_agent != False): 
+                    agents.remove(dead_agent)
                 if game_over:
                     break
-            sleep(0.3)
+
+            #sleep(0.2)
             env.update_map_gui()
         results[episode] = steps
 
@@ -40,53 +42,55 @@ def run_agents(env, agents, num_episodes, agent_type):
         dead_agent = False
         env = Environment(num_agents)
         if(agent_type == RANDOM):
-            team_red, team_blue = random_vs_random_scenario(env)
+            red_team, blue_team = random_vs_random_scenario(env)
         elif(agent_type == GREEDY):
-            team_red, team_blue = greedy_vs_random_scenario(env)
-        agents = list(team_red.values()) + list(team_blue.values())
-        env.team_blue = team_blue.copy()
-        env.team_red = team_red.copy()
+            red_team, blue_team = greedy_vs_random_scenario(env)
+        agents = red_team + blue_team
     
     env.close()
 
     return results
-        
-
-
-def team_initialization(agent_id_counter, num_agents, agent_type, team, env):
-    team_dict = {}
-    for _ in range(num_agents):
-        if(agent_type == GREEDY):
-            team_dict[agent_id_counter] = agent_type(agent_id_counter, team, env, num_agents)
-        elif(agent_type == RANDOM):
-            team_dict[agent_id_counter] = agent_type(agent_id_counter, team, env)
-        agent_id_counter += 1
-    return team_dict, agent_id_counter
 
 def random_vs_random_scenario(env):
-    # 1 - Agent setup
-    agent_id_counter = env.FIRST_AGENT_ID
-    team_red, agent_id_counter = team_initialization(agent_id_counter, num_agents // 2, RANDOM, Agent.RED, env)
-    team_blue, agent_id_counter = team_initialization(agent_id_counter, num_agents // 2, RANDOM, Agent.BLUE, env)
-    return team_red, team_blue
+    red_team = team_initialization(num_agents // 2, RANDOM, Agent.RED, env)
+    blue_team = team_initialization(num_agents // 2, RANDOM, Agent.BLUE, env)
+    return red_team, blue_team
 
 def greedy_vs_random_scenario(env):
     # 1 - Agent setup
-    agent_id_counter = env.FIRST_AGENT_ID
-    team_red, agent_id_counter = team_initialization(agent_id_counter, num_agents // 2, GREEDY, Agent.RED, env)
-    team_blue, agent_id_counter = team_initialization(agent_id_counter, num_agents // 2, RANDOM, Agent.BLUE, env)
+    team_red = team_initialization(num_agents // 2, GREEDY, Agent.RED, env)
+    team_blue = team_initialization(num_agents // 2, RANDOM, Agent.BLUE, env)
     return team_red, team_blue
 
+def team_initialization(num_agents, agent_type, team, env):
+    team_lst = []
+    for _ in range(num_agents):
+        agent = agent_type(team)
+        team_lst.append(agent)
+        agent_pos_x, agent_pos_y = deploy_agent_on_env(agent, env)
+        agent.set_position(agent_pos_x, agent_pos_y)
+    return team_lst
+
+def deploy_agent_on_env(agent, env):
+        free_cells = env.get_free_cells()
+
+        if(agent.get_team() == Agent.RED):
+            free_cells = list(filter(lambda x: (x[1] <= Environment.WIDTH // 2 - 1), free_cells))
+        elif(agent.get_team() == Agent.BLUE):
+            free_cells = list(filter(lambda x: (x[1] >= Environment.WIDTH // 2), free_cells))
+        
+        x, y = free_cells[np.random.choice(len(free_cells))]
+        #print(agent.get_team())
+        env.set_cell_as_agent(x, y, agent)
+        return (x,y)
+
 if __name__ == "__main__":
-    
     results = {}
     num_agents = 4
-     
-    ## RANDOM VS RANDOM:
+
+    """ # RANDOM VS RANDOM:
     # 1 - Setup Environment
-
-    """ print("Running Random vs Random!")
-
+    print("Running Random vs Random")
 
     if num_agents % 2 != 0:
         raise Exception("Total number of agents must be an even number!")
@@ -94,33 +98,27 @@ if __name__ == "__main__":
     env = Environment(num_agents)
 
     # 2 - Setup teams
-    team_red, team_blue = random_vs_random_scenario(env)
-    env.team_blue.update(team_blue.copy())
-    env.team_red.update(team_red.copy())
-    
+    red_team, blue_team = random_vs_random_scenario(env)
+
     # 3 - Run
-    agents = list(team_red.values()) + list(team_blue.values())
-    results["Random"] = run_agents(env, agents, 5, RANDOM) """
+    agents = red_team + blue_team
+    results["Random"] = run_agents(env, agents, 2, RANDOM) """
     
-    ## GREEDY VS RANDOM:
-    # 1 - Setup Environment
+    # ## GREEDY VS RANDOM:
+    # # 1 - Setup Environment
 
     print("Running Greedy vs Random!")
     env = Environment(num_agents)
 
-    # 2 - Setup teams
+    # # 2 - Setup teams
     team_red, team_blue = greedy_vs_random_scenario(env)
-    env.team_blue.update(team_blue.copy())
-    env.team_red.update(team_red.copy())
-
-    #env.set_teams(team_red, team_blue)
     
     # 3 - Run
-    agents = list(team_red.values()) + list(team_blue.values())
-    results["Greedy"] = run_agents(env, agents, 5, GREEDY)
+    agents = team_red + team_blue
+    results["Greedy"] = run_agents(env, agents, 100, GREEDY)
 
     compare_results(
-        results,
-        title="Teams Comparison on Fish and Chips Environment",
-        colors=["orange", "green", "blue"]
+         results,
+         title="Teams Comparison on Fish and Chips Environment",
+         colors=["orange", "green", "blue"]
     )

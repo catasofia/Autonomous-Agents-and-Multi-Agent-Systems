@@ -1,6 +1,4 @@
-from env import Environment
 from abc import abstractmethod
-import numpy as np
 
 class Agent:
     # Agent actions
@@ -15,27 +13,14 @@ class Agent:
     RED = 'R'
     BLUE = 'B'
 
-    def __init__(self, id, team, env):
-        self.id = id
+    def __init__(self, team):
         self.team = team
         self.power = 0
-        self.position = self.deploy_agent_on_env(env)
+        self.position = None
         self.observations = None
-    
-    def deploy_agent_on_env(self, env):
-        free_cells = env.get_free_cells()
-
-        if(self.team == self.RED):
-            free_cells = list(filter(lambda x: (x[1] <= Environment.WIDTH // 2 - 1), free_cells))
-        elif(self.team == self.BLUE):
-            free_cells = list(filter(lambda x: (x[1] >= Environment.WIDTH // 2), free_cells))
-        
-        x, y = free_cells[np.random.choice(len(free_cells))]
-        env.set_cell_as_agent(x, y, self.get_id(), self.get_power())
-        return (x,y)
 
     def get_team(self):
-        return self.team
+        return 'R' if self.team == self.RED else 'B'
 
     def get_id(self):
         return self.id
@@ -46,11 +31,11 @@ class Agent:
     def get_position(self):
         return self.position
 
-    def set_new_position(self, x, y):
+    def set_position(self, x, y):
         self.position = (x,y)
     
     def increase_power(self):
-        self.power+=1
+        self.power += 1
 
     @abstractmethod
     def action(self):
@@ -64,6 +49,7 @@ class Agent:
     
     def get_desired_outcome(self, action):
         x, y = self.get_position()
+        
         if action == self.UP:
             return (x-1, y)
         elif action == self.DOWN:
