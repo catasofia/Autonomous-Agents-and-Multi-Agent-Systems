@@ -4,7 +4,7 @@ from agent import Agent
 
 # TODO:
 # Decide what to do when agents from the same team cross paths with one another
-# Think about alternate ways for represeneting incremental value of agent's power (how to represent it visually?)
+# Think about alternate ways for representing incremental value of agent's power (how to represent it visually?)
 # Refactor init
 
 class Environment:
@@ -18,11 +18,11 @@ class Environment:
     PELLET = 2
 
     # Map items image paths
-    PELLET_IMG = "../imgs/pellet.jpg"
-    RED_FISH_IMG = "../imgs/red_fish.png"
-    BLUE_FISH_IMG = "../imgs/blue_fish.png"
-    CHIPS_IMG = "../imgs/chips.jpg"
-    BLOCK_IMG = "../imgs/block.jpg"
+    PELLET_IMG = "../../imgs/pellet.jpg"
+    RED_FISH_IMG = "../../imgs/red_fish.png"
+    BLUE_FISH_IMG = "../../imgs/blue_fish.png"
+    CHIPS_IMG = "../../imgs/chips.jpg"
+    BLOCK_IMG = "../../imgs/block.jpg"
     
     def __init__(self, num_agents, map=1):
         # Initialize map internal representation
@@ -232,13 +232,6 @@ class Environment:
     def is_enemy(self, x, y, caller_team):
         agent = self.map[x][y]
         return caller_team != agent.get_team()
-
-    def get_agent(self, agent_id, team):
-        if (team == self.RED):
-            return self.team_blue.get(agent_id)
-        elif (team == self.BLUE):
-            return self.team_red.get(agent_id)  
-        raise Exception("Error getting agent!")
 
     def is_game_over(self):
         return self.red_team == 0 or self.blue_team == 0

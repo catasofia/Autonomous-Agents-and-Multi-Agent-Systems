@@ -1,4 +1,3 @@
-from random import random
 from time import sleep
 from agent import Agent
 from greedy_agent import GreedyAgent
@@ -122,3 +121,4 @@ if __name__ == "__main__":
          title="Teams Comparison on Fish and Chips Environment",
          colors=["orange", "green", "blue"]
     )
+    

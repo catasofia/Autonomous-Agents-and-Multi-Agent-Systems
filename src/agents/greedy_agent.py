@@ -1,5 +1,4 @@
 import math
-from re import A
 from agent import Agent
 from astar_algorithm import Astar
 import random as rand
@@ -34,14 +33,13 @@ class GreedyAgent(Agent):
                 elif maze[x][y] != 0:
                     maze[x][y] = 0
         astar = Astar(maze)
-        if(closest_pellet is None and closest_enemy is not None or dist_enemy <= dist_pellet):
+        if dist_enemy <= dist_pellet:
             result = astar.run(self.position, closest_enemy)
             return self.direction_to_go(result[0], result[1])
-        elif(dist_pellet < dist_enemy and closest_pellet is not None):
+        elif dist_enemy > dist_pellet:
             result = astar.run(self.position, closest_pellet)
             return self.direction_to_go(result[0], result[1])
-        else:
-            return rand.randint(0, len(Agent.ACTIONS) - 1)
+        raise Exception("Error when finding action!")
 
     ### Auxiliary Methods
 
@@ -88,3 +86,4 @@ class GreedyAgent(Agent):
             return self.LEFT
         else:
             return self.NOOP
+            

@@ -68,3 +68,4 @@ class GreedyWithColabAgent(Agent):
             return self.LEFT
         else:
             return self.NOOP
+            
