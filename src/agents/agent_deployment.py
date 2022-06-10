@@ -1,5 +1,6 @@
 from time import sleep
 from agent import Agent
+from greedy_with_roles_agent import GreedyRolesAgent
 from greedy_agent import GreedyAgent
 from random_agent import RandomAgent
 from env import Environment
@@ -8,6 +9,7 @@ import numpy as np
 
 RANDOM = RandomAgent
 GREEDY = GreedyAgent
+GREEDY_COLAB = GreedyRolesAgent
 
 def run_agents(env, agents, num_episodes, agent_type):
     results = np.zeros(num_episodes)
@@ -44,6 +46,8 @@ def run_agents(env, agents, num_episodes, agent_type):
             red_team, blue_team = random_vs_random_scenario(env)
         elif(agent_type == GREEDY):
             red_team, blue_team = greedy_vs_random_scenario(env)
+        elif(agent_type == GREEDY_COLAB):
+            red_team, blue_team = greedy_Roles_vs_random_scenario(env)
         agents = red_team + blue_team
     
     env.close()
@@ -61,6 +65,12 @@ def greedy_vs_random_scenario(env):
     team_blue = team_initialization(num_agents // 2, RANDOM, Agent.BLUE, env)
     return team_red, team_blue
 
+def greedy_Roles_vs_random_scenario(env):
+    # 1 - Agent setup
+    team_red = team_initialization_collab(num_agents // 2, GREEDY_COLAB, Agent.RED, env)
+    team_blue = team_initialization(num_agents // 2, RANDOM, Agent.BLUE, env)
+    return team_red, team_blue
+
 def team_initialization(num_agents, agent_type, team, env):
     team_lst = []
     for _ in range(num_agents):
@@ -68,6 +78,19 @@ def team_initialization(num_agents, agent_type, team, env):
         team_lst.append(agent)
         agent_pos_x, agent_pos_y = deploy_agent_on_env(agent, env)
         agent.set_position(agent_pos_x, agent_pos_y)
+    return team_lst
+
+def team_initialization_collab(num_agents, agent_type, team, env):
+    team_lst = []
+    for _ in range(num_agents // 2):
+        agent_1 = agent_type(team, "P")
+        agent_2 = agent_type(team, "E")
+        team_lst.append(agent_1)
+        team_lst.append(agent_2)
+        agent_pos_x, agent_pos_y = deploy_agent_on_env(agent_1, env)
+        agent_1.set_position(agent_pos_x, agent_pos_y)
+        agent_pos_x, agent_pos_y = deploy_agent_on_env(agent_2, env)
+        agent_2.set_position(agent_pos_x, agent_pos_y)
     return team_lst
 
 def deploy_agent_on_env(agent, env):
@@ -87,7 +110,7 @@ if __name__ == "__main__":
     results = {}
     num_agents = 4
 
-    """ # RANDOM VS RANDOM:
+    # RANDOM VS RANDOM:
     # 1 - Setup Environment
     print("Running Random vs Random")
 
@@ -101,7 +124,7 @@ if __name__ == "__main__":
 
     # 3 - Run
     agents = red_team + blue_team
-    results["Random"] = run_agents(env, agents, 2, RANDOM) """
+    results["Random"] = run_agents(env, agents, 1000, RANDOM)
     
     # ## GREEDY VS RANDOM:
     # # 1 - Setup Environment
@@ -114,11 +137,33 @@ if __name__ == "__main__":
     
     # 3 - Run
     agents = team_red + team_blue
-    results["Greedy"] = run_agents(env, agents, 100, GREEDY)
+    results["Greedy"] = run_agents(env, agents, 1000, GREEDY)
+ 
+    # ## GREEDY COLAB VS RANDOM:
+    # # 1 - Setup Environment
+
+    print("Running Greedy with Colaboration vs Random!")
+    env = Environment(num_agents)
+
+    # # 2 - Setup teams
+    team_red, team_blue = greedy_Roles_vs_random_scenario(env)
+    
+    # 3 - Run
+    agents = team_red + team_blue
+    results["Greedy with Roles"] = run_agents(env, agents, 1000, GREEDY_COLAB)
 
     compare_results(
          results,
          title="Teams Comparison on Fish and Chips Environment",
          colors=["orange", "green", "blue"]
     )
+
+    del results["Random"]
+    compare_results(
+         results,
+         title="Teams Comparison on Fish and Chips Environment",
+         colors=["green", "blue"]
+    )
+
+
     

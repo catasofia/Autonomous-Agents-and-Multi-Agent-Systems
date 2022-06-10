@@ -4,7 +4,6 @@ from agent import Agent
 
 # TODO:
 # Decide what to do when agents from the same team cross paths with one another
-# Think about alternate ways for representing incremental value of agent's power (how to represent it visually?)
 # Refactor init
 
 class Environment:
@@ -30,9 +29,7 @@ class Environment:
         MAP2 = "M2"
         MAP3 = "M3"
         MAP_SETTING = {
-            MAP1:[[1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+            MAP1:[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -43,9 +40,11 @@ class Environment:
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-                  [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1]],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
             MAP2:[[1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
                   [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
                   [1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
@@ -177,14 +176,16 @@ class Environment:
                 if enemy.get_power() > agent.get_power():
                     self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
                     self.delete_agent_from_env(agent)
-                    enemy.increase_power()
+                    enemies = self.get_agents_from_team(enemy.get_team())
+                    self.increase_team_power(enemies)
                     return self.get_map(), self.is_game_over(), agent
                 
                 elif enemy.get_power() <= agent.get_power():
                     self.set_cell_as_free_space(prev_pos_x, prev_pos_y)
                     self.set_cell_as_agent(desired_pos_x, desired_pos_y, agent)
                     agent.set_position(desired_pos_x, desired_pos_y)
-                    agent.increase_power()
+                    agents = self.get_agents_from_team(agent.get_team())
+                    self.increase_team_power(agents)
                     self.delete_agent_from_env(enemy)
                     return self.get_map(), self.is_game_over(), enemy
                 
@@ -203,6 +204,20 @@ class Environment:
         else:
             raise Exception("Error updating map!")
     
+    def get_agents_from_team(self, team):
+        agents = []
+        for x in range(len(self.map)):
+            for y in range(len(self.map[x])):
+                if isinstance(self.map[x][y], Agent):
+                    agent = self.map[x][y]
+                    if(agent.get_team() == team):
+                        agents.append(agent)
+        return agents
+
+    def increase_team_power(self, agents):
+        for agent in agents:
+            agent.increase_power()
+
     def cell_is_out_of_map_bounds(self, x, y):
         is_x_out_of_map_bound = x > self.HEIGHT - 1 or x < 0 
         is_y_out_of_map_bound = y > self.WIDTH - 1 or y < 0
@@ -217,7 +232,8 @@ class Environment:
     def update_map_eaten_pellet(self, prev_x, prev_y, next_x, next_y, agent):
         self.set_cell_as_free_space(prev_x, prev_y)
         agent.set_position(next_x, next_y)
-        agent.increase_power()
+        agents = self.get_agents_from_team(agent.get_team())
+        self.increase_team_power(agents)
         self.set_cell_as_agent(next_x, next_y, agent)
 
     def set_cell_as_free_space(self, x, y):
