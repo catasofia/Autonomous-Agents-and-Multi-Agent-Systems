@@ -6,10 +6,11 @@ from random_agent import RandomAgent
 from env import Environment
 from utils import compare_results
 import numpy as np
+import matplotlib.pyplot as plt
 
 RANDOM = RandomAgent
 GREEDY = GreedyAgent
-GREEDY_COLAB = GreedyRolesAgent
+GREEDY_ROLES = GreedyRolesAgent
 
 def run_agents(env, agents, num_episodes, agent_type):
     results = np.zeros(num_episodes)
@@ -19,6 +20,8 @@ def run_agents(env, agents, num_episodes, agent_type):
 
     for episode in range(num_episodes):
         steps = 0
+        power = 0
+        #wins = 0
         observations = env.get_map()
 
         while (not game_over):
@@ -28,15 +31,15 @@ def run_agents(env, agents, num_episodes, agent_type):
                 agent.see(observations)
                 action = agent.action()
                 observations, game_over, dead_agent = env.step(agent, action)
-
                 if (dead_agent != False): 
                     agents.remove(dead_agent)
                 if game_over:
+                    power = agent.get_power()
                     break
 
             #sleep(0.2)
             env.update_map_gui()
-        results[episode] = steps
+        results[episode] = power
 
         env.update_map_gui()
         game_over = False
@@ -46,12 +49,12 @@ def run_agents(env, agents, num_episodes, agent_type):
             red_team, blue_team = random_vs_random_scenario(env)
         elif(agent_type == GREEDY):
             red_team, blue_team = greedy_vs_random_scenario(env)
-        elif(agent_type == GREEDY_COLAB):
+        elif(agent_type == GREEDY_ROLES):
             red_team, blue_team = greedy_Roles_vs_random_scenario(env)
         agents = red_team + blue_team
     
     env.close()
-
+    #result = np.count_nonzero((results == 1))
     return results
 
 def random_vs_random_scenario(env):
@@ -67,7 +70,7 @@ def greedy_vs_random_scenario(env):
 
 def greedy_Roles_vs_random_scenario(env):
     # 1 - Agent setup
-    team_red = team_initialization_collab(num_agents // 2, GREEDY_COLAB, Agent.RED, env)
+    team_red = team_initialization_collab(num_agents // 2, GREEDY_ROLES, Agent.RED, env)
     team_blue = team_initialization(num_agents // 2, RANDOM, Agent.BLUE, env)
     return team_red, team_blue
 
@@ -150,7 +153,23 @@ if __name__ == "__main__":
     
     # 3 - Run
     agents = team_red + team_blue
-    results["Greedy with Roles"] = run_agents(env, agents, 1000, GREEDY_COLAB)
+    results["Greedy with Roles"] = run_agents(env, agents, 1000, GREEDY_ROLES)
+
+
+    """ data = {'Random': results["Random"], 'Greedy': results["Greedy"], 'Greedy with Roles': results["Greedy with Roles"]}
+    courses = list(data.keys())
+    values = list(data.values())
+    
+    fig = plt.figure(figsize = (10, 5))
+    
+    # creating the bar plot
+    plt.bar(courses, values, color =["orange", "green", "blue"],
+            width = 0.4)
+    
+    plt.xlabel("Algorithms")
+    plt.ylabel("Percentage of wins in 1000 episodes")
+    plt.title("Teams Comparison on Fish and Chips Environment")
+    plt.show() """
 
     compare_results(
          results,
@@ -163,7 +182,7 @@ if __name__ == "__main__":
          results,
          title="Teams Comparison on Fish and Chips Environment",
          colors=["green", "blue"]
-    )
+    ) 
 
 
     

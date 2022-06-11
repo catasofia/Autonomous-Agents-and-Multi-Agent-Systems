@@ -78,7 +78,7 @@ class Environment:
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0],
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
         }        
-        self.map = MAP_SETTING.get(MAP2)
+        self.map = MAP_SETTING.get(MAP1)
         self.num_agents = num_agents
         self.red_team = num_agents // 2
         self.blue_team = self.red_team
