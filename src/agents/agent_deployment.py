@@ -21,7 +21,7 @@ def run_agents(env, agents, num_episodes, agent_type):
     for episode in range(num_episodes):
         steps = 0
         power = 0
-        #wins = 0
+        wins = 0
         observations = env.get_map()
 
         while (not game_over):
@@ -31,13 +31,15 @@ def run_agents(env, agents, num_episodes, agent_type):
                 agent.see(observations)
                 action = agent.action()
                 observations, game_over, dead_agent = env.step(agent, action)
-                if (dead_agent != False): 
+                if (dead_agent != False):
                     agents.remove(dead_agent)
                 if game_over:
-                    power = agent.get_power()
+                    #if(agents[0].get_team() == Agent.RED):
+                    #    wins += 1
+                    power = agents[0].get_power()
                     break
 
-            #sleep(0.2)
+            #sleep(0.02)
             env.update_map_gui()
         results[episode] = steps
 
@@ -54,8 +56,9 @@ def run_agents(env, agents, num_episodes, agent_type):
         agents = red_team + blue_team
     
     env.close()
-    #result = np.count_nonzero((results == 1))
     return results
+    #result = np.count_nonzero((results == 1))
+    #return result / 10
 
 def random_vs_random_scenario(env):
     red_team = team_initialization(num_agents // 2, RANDOM, Agent.RED, env)
@@ -145,7 +148,7 @@ if __name__ == "__main__":
     # ## GREEDY COLAB VS RANDOM:
     # # 1 - Setup Environment
 
-    print("Running Greedy with Colaboration vs Random!")
+    print("Running Greedy with Roles vs Random!")
     env = Environment(num_agents)
 
     # # 2 - Setup teams
@@ -156,7 +159,7 @@ if __name__ == "__main__":
     results["Greedy with Roles"] = run_agents(env, agents, 1000, GREEDY_ROLES)
 
 
-    """ data = {'Random': results["Random"], 'Greedy': results["Greedy"], 'Greedy with Roles': results["Greedy with Roles"]}
+    """ data = {'Random': results['Random'], 'Greedy': results["Greedy"],'Greedy with Roles': results["Greedy with Roles"]}
     courses = list(data.keys())
     values = list(data.values())
     
@@ -183,6 +186,3 @@ if __name__ == "__main__":
          title="Teams Comparison on Fish and Chips Environment",
          colors=["green", "blue"]
     ) 
-
-
-    

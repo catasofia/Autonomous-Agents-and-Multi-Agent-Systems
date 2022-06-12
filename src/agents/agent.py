@@ -36,6 +36,9 @@ class Agent:
     
     def increase_power(self):
         self.power += 1
+    
+    def set_power(self, power):
+        self.power = power
 
     @abstractmethod
     def action(self):
