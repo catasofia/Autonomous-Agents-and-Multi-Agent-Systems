@@ -39,7 +39,7 @@ def run_agents(env, agents, num_episodes, agent_type):
 
             #sleep(0.2)
             env.update_map_gui()
-        results[episode] = power
+        results[episode] = steps
 
         env.update_map_gui()
         game_over = False
