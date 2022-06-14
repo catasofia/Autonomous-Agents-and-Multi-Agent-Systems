@@ -34,14 +34,14 @@ def run_agents(env, agents, num_episodes, agent_type):
                 if (dead_agent != False):
                     agents.remove(dead_agent)
                 if game_over:
-                    #if(agents[0].get_team() == Agent.RED):
-                    #    wins += 1
+                    if(agents[0].get_team() == Agent.RED):
+                        wins += 1
                     power = agents[0].get_power()
                     break
 
             #sleep(0.02)
             env.update_map_gui()
-        results[episode] = steps
+        results[episode] = power
 
         env.update_map_gui()
         game_over = False
@@ -62,19 +62,19 @@ def run_agents(env, agents, num_episodes, agent_type):
 
 def random_vs_random_scenario(env):
     red_team = team_initialization(num_agents // 2, RANDOM, Agent.RED, env)
-    blue_team = team_initialization(num_agents // 2, RANDOM, Agent.BLUE, env)
+    blue_team = team_initialization_collab(num_agents // 2, GREEDY_ROLES, Agent.BLUE, env)
     return red_team, blue_team
 
 def greedy_vs_random_scenario(env):
     # 1 - Agent setup
     team_red = team_initialization(num_agents // 2, GREEDY, Agent.RED, env)
-    team_blue = team_initialization(num_agents // 2, RANDOM, Agent.BLUE, env)
+    team_blue = team_initialization_collab(num_agents // 2, GREEDY_ROLES, Agent.BLUE, env)
     return team_red, team_blue
 
 def greedy_Roles_vs_random_scenario(env):
     # 1 - Agent setup
     team_red = team_initialization_collab(num_agents // 2, GREEDY_ROLES, Agent.RED, env)
-    team_blue = team_initialization(num_agents // 2, RANDOM, Agent.BLUE, env)
+    team_blue = team_initialization_collab(num_agents // 2, GREEDY_ROLES, Agent.BLUE, env)
     return team_red, team_blue
 
 def team_initialization(num_agents, agent_type, team, env):
