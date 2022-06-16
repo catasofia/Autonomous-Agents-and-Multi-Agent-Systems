@@ -1,4 +1,3 @@
-from os import GRND_RANDOM
 from time import sleep
 from agent import Agent
 from greedy_with_roles_agent import GreedyRolesAgent
@@ -45,7 +44,7 @@ def run_agents(env, agents, num_episodes, agent_type):
                         results_wins[episode] = wins
                     break
 
-            #sleep(0.5)
+            sleep(1)
             env.update_map_gui()
 
         env.update_map_gui()
@@ -70,19 +69,19 @@ def run_agents(env, agents, num_episodes, agent_type):
 
 def random_vs_random_scenario(env):
     red_team = team_initialization(num_agents // 2, RANDOM, Agent.RED, env)
-    blue_team = team_initialization_collab(num_agents // 2, GREEDY_ROLES, Agent.BLUE, env)
+    blue_team = team_initialization(num_agents // 2, RANDOM, Agent.BLUE, env)
     return red_team, blue_team
 
 def greedy_vs_random_scenario(env):
     # 1 - Agent setup
     team_red = team_initialization(num_agents // 2, GREEDY, Agent.RED, env)
-    team_blue = team_initialization_collab(num_agents // 2, GREEDY_ROLES, Agent.BLUE, env)
+    team_blue = team_initialization(num_agents // 2, GREEDY, Agent.BLUE, env)
     return team_red, team_blue
 
 def greedy_Roles_vs_random_scenario(env):
     # 1 - Agent setup
     team_red = team_initialization_collab(num_agents // 2, GREEDY_ROLES, Agent.RED, env)
-    team_blue = team_initialization_collab(num_agents // 2, GREEDY_ROLES, Agent.BLUE, env)
+    team_blue = team_initialization(num_agents // 2, GREEDY, Agent.BLUE, env)
     return team_red, team_blue
 
 def team_initialization(num_agents, agent_type, team, env):
@@ -97,8 +96,8 @@ def team_initialization(num_agents, agent_type, team, env):
 def team_initialization_collab(num_agents, agent_type, team, env):
     team_lst = []
     for _ in range(num_agents // 2):
-        agent_1 = agent_type(team, "P")
-        agent_2 = agent_type(team, "E")
+        agent_1 = agent_type(team, "P", env.get_num_pellets())
+        agent_2 = agent_type(team, "E", env.get_num_pellets())
         team_lst.append(agent_1)
         team_lst.append(agent_2)
         agent_pos_x, agent_pos_y = deploy_agent_on_env(agent_1, env)
@@ -181,12 +180,12 @@ if __name__ == "__main__":
     
     plt.xlabel("")
     plt.ylabel("Percentage of wins in 1000 episodes")
-    plt.title("Teams Comparison on Fish and Chips Environment vs Greedy with Roles Team")
+    plt.title("Teams Comparison on Fish and Chips Environment vs Greedy Team")
     plt.show()
 
     compare_results(
          results_steps,
-         title="Teams Comparison on Fish and Chips Environment vs Greedy with Roles Team",
+         title="Teams Comparison on Fish and Chips Environment vs Greedy Team",
          metric="Steps of the winning team per episode",
          colors=["orange", "green", "blue"]
     )
@@ -194,14 +193,14 @@ if __name__ == "__main__":
     del results_steps["Random"]
     compare_results(
             results_steps,
-            title="Teams Comparison on Fish and Chips Environment vs Greedy with Roles Team",
+            title="Teams Comparison on Fish and Chips Environment vs Greedy Team",
             metric="Steps of the winning team per episode",
-            colors=["orange", "green", "blue"]
+            colors=["green", "blue"]
         )
 
     compare_results(
          results_power,
-         title="Teams Comparison on Fish and Chips Environment vs Greedy with Roles Team",
+         title="Teams Comparison on Fish and Chips Environment vs Greedy Team",
          metric="Power of the winning team per episode",
          colors=["orange", "green", "blue"]
     ) 

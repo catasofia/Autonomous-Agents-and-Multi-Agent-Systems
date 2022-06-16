@@ -82,7 +82,7 @@ class Environment:
         self.num_agents = num_agents
         self.red_team = num_agents // 2
         self.blue_team = self.red_team
-        self.scatter_pellets()
+        self.num_pellets = self.scatter_pellets()
 
         # Initialize map GUI
         self.grid_display = pygame.display.set_mode((400, 400))
@@ -102,6 +102,9 @@ class Environment:
         self.grid_node_width = 25
         self.grid_node_height = 25
 
+    def get_num_pellets(self):
+        return self.num_pellets
+
     # Randomly deploys pellets in the map
     def scatter_pellets(self):
         free_cells = self.get_free_cells()
@@ -111,6 +114,7 @@ class Environment:
             x, y = free_cells[np.random.choice(len(free_cells))]
             self.set_cell_as_pellet(x, y)
             free_cells = self.get_free_cells()
+        return num_pellets
     
     # Returns list of unoccupied cells (i.e., cells that have neither blocks, pellets, nor agents)
     def get_free_cells(self):

@@ -14,9 +14,10 @@ class GreedyRolesAgent(Agent):
     PELLETS = "P"
     ENEMIES = "E"
 
-    def __init__(self,team, role):
+    def __init__(self,team, role, num_pellets):
         super(GreedyRolesAgent, self).__init__(team)
         self.role = role
+        self.num_pellets = num_pellets
     
     def action(self):
         pellets_positions = []
@@ -79,6 +80,9 @@ class GreedyRolesAgent(Agent):
             return action
 
     ### Auxiliary Methods
+
+    def get_role(self):
+        return self.role
 
     def direction_to_go(self, agent_position, object_position):
         distances = np.array(object_position) - np.array(agent_position)
