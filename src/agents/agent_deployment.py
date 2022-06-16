@@ -1,3 +1,4 @@
+from os import GRND_RANDOM
 from time import sleep
 from agent import Agent
 from greedy_with_roles_agent import GreedyRolesAgent
@@ -13,7 +14,9 @@ GREEDY = GreedyAgent
 GREEDY_ROLES = GreedyRolesAgent
 
 def run_agents(env, agents, num_episodes, agent_type):
-    results = np.zeros(num_episodes)
+    results_steps = np.zeros(num_episodes)
+    results_power = np.zeros(num_episodes)
+    results_wins = np.zeros(num_episodes)
     num_agents = len(agents)
     game_over = False
     observations = env.get_map()
@@ -36,12 +39,14 @@ def run_agents(env, agents, num_episodes, agent_type):
                 if game_over:
                     if(agents[0].get_team() == Agent.RED):
                         wins += 1
-                    power = agents[0].get_power()
+                        power = agents[0].get_power()
+                        results_power[episode] = power
+                        results_steps[episode] = steps
+                        results_wins[episode] = wins
                     break
 
-            #sleep(0.02)
+            #sleep(0.5)
             env.update_map_gui()
-        results[episode] = power
 
         env.update_map_gui()
         game_over = False
@@ -56,8 +61,11 @@ def run_agents(env, agents, num_episodes, agent_type):
         agents = red_team + blue_team
     
     env.close()
-    return results
-    #result = np.count_nonzero((results == 1))
+    results_steps = results_steps[np.where(results_steps != 0)]
+    results_power = results_power[np.where(results_power != 0)]
+    result_wins = np.count_nonzero((results_wins == 1))
+    wins_percentage = result_wins / 10
+    return results_steps, results_power, wins_percentage
     #return result / 10
 
 def random_vs_random_scenario(env):
@@ -108,12 +116,14 @@ def deploy_agent_on_env(agent, env):
             free_cells = list(filter(lambda x: (x[1] >= Environment.WIDTH // 2), free_cells))
         
         x, y = free_cells[np.random.choice(len(free_cells))]
-        #print(agent.get_team())
         env.set_cell_as_agent(x, y, agent)
+        
         return (x,y)
 
 if __name__ == "__main__":
-    results = {}
+    results_steps = {}
+    results_power = {}
+    results_wins = {}
     num_agents = 4
 
     # RANDOM VS RANDOM:
@@ -130,7 +140,7 @@ if __name__ == "__main__":
 
     # 3 - Run
     agents = red_team + blue_team
-    results["Random"] = run_agents(env, agents, 1000, RANDOM)
+    results_steps["Random"], results_power["Random"], results_wins["Random"] = run_agents(env, agents, 1000, RANDOM)
     
     # ## GREEDY VS RANDOM:
     # # 1 - Setup Environment
@@ -143,7 +153,7 @@ if __name__ == "__main__":
     
     # 3 - Run
     agents = team_red + team_blue
-    results["Greedy"] = run_agents(env, agents, 1000, GREEDY)
+    results_steps["Greedy"], results_power["Greedy"], results_wins["Greedy"] = run_agents(env, agents, 1000, GREEDY)
  
     # ## GREEDY COLAB VS RANDOM:
     # # 1 - Setup Environment
@@ -156,10 +166,10 @@ if __name__ == "__main__":
     
     # 3 - Run
     agents = team_red + team_blue
-    results["Greedy with Roles"] = run_agents(env, agents, 1000, GREEDY_ROLES)
+    results_steps["Greedy with Roles"], results_power["Greedy with Roles"], results_wins["Greedy with Roles"] = run_agents(env, agents, 1000, GREEDY_ROLES)
 
 
-    """ data = {'Random': results['Random'], 'Greedy': results["Greedy"],'Greedy with Roles': results["Greedy with Roles"]}
+    data = {'Random': results_wins['Random'], 'Greedy': results_wins["Greedy"],'Greedy with Roles': results_wins["Greedy with Roles"]}
     courses = list(data.keys())
     values = list(data.values())
     
@@ -169,20 +179,29 @@ if __name__ == "__main__":
     plt.bar(courses, values, color =["orange", "green", "blue"],
             width = 0.4)
     
-    plt.xlabel("Algorithms")
+    plt.xlabel("")
     plt.ylabel("Percentage of wins in 1000 episodes")
-    plt.title("Teams Comparison on Fish and Chips Environment")
-    plt.show() """
+    plt.title("Teams Comparison on Fish and Chips Environment vs Greedy with Roles Team")
+    plt.show()
 
     compare_results(
-         results,
-         title="Teams Comparison on Fish and Chips Environment",
+         results_steps,
+         title="Teams Comparison on Fish and Chips Environment vs Greedy with Roles Team",
+         metric="Steps of the winning team per episode",
          colors=["orange", "green", "blue"]
     )
 
-    del results["Random"]
+    del results_steps["Random"]
     compare_results(
-         results,
-         title="Teams Comparison on Fish and Chips Environment",
-         colors=["green", "blue"]
+            results_steps,
+            title="Teams Comparison on Fish and Chips Environment vs Greedy with Roles Team",
+            metric="Steps of the winning team per episode",
+            colors=["orange", "green", "blue"]
+        )
+
+    compare_results(
+         results_power,
+         title="Teams Comparison on Fish and Chips Environment vs Greedy with Roles Team",
+         metric="Power of the winning team per episode",
+         colors=["orange", "green", "blue"]
     ) 

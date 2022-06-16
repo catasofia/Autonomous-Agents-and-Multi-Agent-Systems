@@ -232,9 +232,9 @@ class Environment:
     def update_map_eaten_pellet(self, prev_x, prev_y, next_x, next_y, agent):
         self.set_cell_as_free_space(prev_x, prev_y)
         agent.set_position(next_x, next_y)
+        self.set_cell_as_agent(next_x, next_y, agent)
         agents = self.get_agents_from_team(agent.get_team())
         self.increase_team_power(agents)
-        self.set_cell_as_agent(next_x, next_y, agent)
 
     def set_cell_as_free_space(self, x, y):
         self.map[x][y] = self.FREE_SPACE

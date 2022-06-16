@@ -113,7 +113,7 @@ def plot_confidence_bar(names, means, std_devs, N, title, x_label, y_label, conf
     plt.close()
 
 
-def compare_results(results, confidence=0.95, title="Agents Comparison", metric="Power of the winning team per episode", colors=None):
+def compare_results(results, confidence=0.95, title="Agents Comparison", metric="Steps of the winning team per episode", colors=None):
     """Displays a bar plot comparing the performance of different agents/teams.
 
         Parameters

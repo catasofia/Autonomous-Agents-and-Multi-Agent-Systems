@@ -41,6 +41,8 @@ class GreedyAgent(Agent):
         elif dist_enemy > dist_pellet:
             result = astar.a_star_search(self.position, closest_pellet)
             return self.direction_to_go(result[0], result[1])
+        else:
+            return rand.randint(0, len(Agent.ACTIONS) - 1)
         raise Exception("Error when finding action!")
 
     ### Auxiliary Methods
