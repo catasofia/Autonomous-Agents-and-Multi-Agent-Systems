@@ -43,13 +43,11 @@ class GreedyAgent(Agent):
             return self.direction_to_go(result[0], result[1])
         else:
             return rand.randint(0, len(Agent.ACTIONS) - 1)
-        raise Exception("Error when finding action!")
 
     ### Auxiliary Methods
 
     def direction_to_go(self, agent_position, object_position):
         distances = np.array(object_position) - np.array(agent_position)
-        #distances = [int(object_position[0]) - int(agent_position[0]), int(object_position[1]) - int(agent_position[1])]
         abs_distances = np.absolute(distances)
         if abs_distances[0] > abs_distances[1]:
             return self._close_horizontally(distances)

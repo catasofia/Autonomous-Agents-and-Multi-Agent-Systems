@@ -2,10 +2,6 @@ import numpy as np
 import pygame
 from agent import Agent
 
-# TODO:
-# Decide what to do when agents from the same team cross paths with one another
-# Refactor init
-
 class Environment:
     # Map square grid size (in cells)
     WIDTH = 16
@@ -78,7 +74,7 @@ class Environment:
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0],
                   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
         }        
-        self.map = MAP_SETTING.get(MAP3)
+        self.map = MAP_SETTING.get(map)
         self.num_agents = num_agents
         self.red_team = num_agents // 2
         self.blue_team = self.red_team
@@ -152,12 +148,8 @@ class Environment:
                         self.grid_display.blit(self.blue_fish, (x,y))
                 else:
                     self.createSquare(x, y, (0, 0, 0))
-                x += self.grid_node_width # for ever item/number in that row we move one "step" to the right
-            y += self.grid_node_height   # for every new row we move one "step" downwards
-
-        #for event in pygame.event.get():g
-        #    if event.type == pygame.QUIT:
-        #        run = False
+                x += self.grid_node_width
+            y += self.grid_node_height
 
         pygame.display.update()
 
@@ -270,4 +262,3 @@ class Environment:
 
     def close(self):
         pygame.quit()
-        #exit()

@@ -30,8 +30,8 @@ class GreedyRolesAgent(Agent):
                     if self.get_team() != self.observations[x][y].get_team():
                         enemies_positions.append((x,y))
         
-        closest_pellet, dist_pellet = self.closest_object(self.position, pellets_positions)
-        closest_enemy, dist_enemy = self.closest_object(self.position, enemies_positions)
+        closest_pellet, _ = self.closest_object(self.position, pellets_positions)
+        closest_enemy, _ = self.closest_object(self.position, enemies_positions)
         
         maze = copy.deepcopy(self.observations) 
         for x in range(len(maze)):
